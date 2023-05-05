@@ -1,12 +1,17 @@
 from django.db import models
 
 
+class Collection(models.Model):
+    title = models.CharField(max_length=255)
+
+
 class Product(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     inventory = models.IntegerField()
     last_update = models.DateTimeField(auto_now=True)
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
 
     BRONZE = "B"
     SILVER = "S"
@@ -17,22 +22,26 @@ class Product(models.Model):
         (GOLD, "Gold"),
     ]
     membership = models.CharField(
-        max_length=1,
-        choices=MEMBERSHIP_CHOICES,
-        default=BRONZE,
-    )
+        max_length=1, choices=MEMBERSHIP_CHOICES, default=BRONZE)
 
 
 class Customer(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=15, unique=True)
     birth_date = models.DateField(blank=True, null=True)
+
+
+class Address(models.Model):
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
 
 
 class Order(models.Model):
     placed_at = models.DateField(auto_now_add=True)
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
     PENDING = "B"
     COMPLETE = "S"
@@ -48,8 +57,19 @@ class Order(models.Model):
         default=PENDING,
     )
 
-class Address(models.Model):
-    street = models.CharField(max_length=255)
-    city = models.CharField(max_length=255)
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, primary_key=True)
-    
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.PositiveSmallIntegerField()
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+
+
+class Cart(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField()
