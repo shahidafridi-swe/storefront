@@ -17,6 +17,15 @@ class Product(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
     promotions = models.ManyToManyField(Promotion)
+    
+
+
+class Customer(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=15, unique=True)
+    birth_date = models.DateField(blank=True, null=True)
     BRONZE = "B"
     SILVER = "S"
     GOLD = "G"
@@ -27,14 +36,6 @@ class Product(models.Model):
     ]
     membership = models.CharField(
         max_length=1, choices=MEMBERSHIP_CHOICES, default=BRONZE)
-
-
-class Customer(models.Model):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=15, unique=True)
-    birth_date = models.DateField(blank=True, null=True)
 
 
 class Address(models.Model):
