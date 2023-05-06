@@ -5,8 +5,10 @@ from store.models import Product
 
 def say_hello(request):
 
-    # queryset = Product.objects.all()
-    queryset = Product.objects.select_related('collection').all()
+    # select_related(1)
+    # prefetch_related(n)
+    queryset = Product.objects.prefetch_related(
+        'promotions').select_related('collection').all()
 
     context = {
         'products': queryset,
