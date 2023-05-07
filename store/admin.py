@@ -117,6 +117,7 @@ class CustomerAdmin(admin.ModelAdmin):
     ordering = ['first_name', 'last_name']
     list_per_page = 10
     search_fields = ['first_name__istartswith', 'last_name__istartswith']
+  
 
     @admin.display(ordering='orders_count')
     def orders_count(self, customer):
@@ -139,3 +140,5 @@ class CustomerAdmin(admin.ModelAdmin):
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'placed_at', 'customer']
+    autocomplete_fields = ['customer']
+
