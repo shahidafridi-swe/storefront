@@ -50,6 +50,7 @@ class PriceFilter(admin.SimpleListFilter):
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ['title', 'products_count']
+    search_fields = ['title']
 
     @admin.display(ordering='products_count')
     def products_count(self, collection):
@@ -71,6 +72,17 @@ class CollectionAdmin(admin.ModelAdmin):
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
+
+    #Forms
+    # fields = ['title', 'slug']
+    # exclude = ['title', 'slug']
+    # readonly_fields = ['title', 'slug']
+    autocomplete_fields = ['collection']
+    prepopulated_fields ={
+        'slug':['title']
+    } 
+
+
     actions = ['clear_inventory']
     list_display = ['title', 'unit_price',
                     'inventory_status', 'collection_title']
