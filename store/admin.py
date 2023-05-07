@@ -19,9 +19,33 @@ class InventoryFilter(admin.SimpleListFilter):
         ]
 
     def queryset(self, request, queryset: QuerySet):
-        if self.value()=='<10':
+        if self.value() == '<10':
             return queryset.filter(inventory__lt=10)
-        return queryset.filter(inventory__gt=9)
+        elif self.value() == '<10':
+            return queryset.filter(inventory__gt=9)
+
+
+class PriceFilter(admin.SimpleListFilter):
+    title = 'price'
+    parameter_name = 'unit_price'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('1-10', '$ 1-10'),
+            ('11-20', '$ 11-20'),
+            ('21-50', '$ 21-50'),
+            ('>50', '$ 50+'),
+        ]
+    
+    def queryset(self, request, queryset: QuerySet):
+        if self.value() == '1-10':
+            return queryset.filter(unit_price__lte=10)
+        elif self.value() == '11-20':
+            return queryset.filter(unit_price__gt=10).filter(unit_price__lte=20)
+        elif self.value() == '21-50':
+            return queryset.filter(unit_price__gt=20).filter(unit_price__lte=50)
+        elif self.value() == '>50':
+            return queryset.filter(unit_price__gt=50)
 
 
 @admin.register(models.Collection)
@@ -51,7 +75,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ['title', 'unit_price',
                     'inventory_status', 'collection_title']
     list_editable = ['unit_price']
-    list_filter = ['collection', 'last_update', InventoryFilter]
+    list_filter = ['collection', 'last_update', InventoryFilter, PriceFilter]
     list_per_page = 10
 
     list_select_related = ['collection']
